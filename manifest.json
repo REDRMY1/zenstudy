@@ -1,0 +1,20 @@
+{
+  "name": "ZenStudy • Minimal Study & Planner",
+  "short_name": "ZenStudy",
+  "description": "Minimal, clean Android-style study companion with customizable to-do list, year/month organizer, timetable, focus timer, and custom backgrounds.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF9F4",
+  "theme_color": "#FFFFFF",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "./logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

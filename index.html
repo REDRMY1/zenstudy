@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ZenStudy • Minimal Study Planner & Timetable</title>
+  <meta name="description" content="A clean, minimal, Android-style study companion with customizable to-do list, month & year filter, timetable, focus timer, and custom backgrounds.">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ZenStudy">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/jpeg" href="./logo.jpg">
+  <link rel="apple-touch-icon" href="./logo.jpg">
+
+  <!-- Google Fonts: Plus Jakarta Sans for clean modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-theme="light">
+  <!-- Dynamic Background Layer -->
+  <div id="bg-layer" class="bg-layer"></div>
+  <div id="bg-overlay" class="bg-overlay"></div>
+
+  <!-- App Wrapper (Mobile Android frame container) -->
+  <div class="app-container">
+    
+    <!-- Top Android App Bar -->
+    <header class="app-header">
+      <div class="header-left">
+        <img src="./logo.jpg" alt="ZenStudy Logo" class="app-logo">
+        <div class="header-titles">
+          <h1 class="app-title">ZenStudy</h1>
+          <p class="current-date-text" id="current-date-display">Today</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Dark Mode Toggle Button -->
+        <button id="btn-theme-mode" class="action-btn icon-only" title="Toggle Dark / Light Mode" aria-label="Toggle Dark Mode">
+          <!-- Sun Icon (shown in dark mode) -->
+          <svg id="icon-sun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <!-- Moon Icon (shown in light mode) -->
+          <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Install / Download PWA Button -->
+        <button id="btn-install-app" class="action-btn install-btn" title="Download to Home Screen" aria-label="Install App">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span class="btn-text">Install</span>
+        </button>
+
+        <!-- Ambient Sound Quick Toggle -->
+        <button id="btn-quick-sound" class="action-btn icon-only" title="Toggle Ambient Study Sound" aria-label="Ambient Sound">
+          <svg id="sound-icon-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
+            <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          <svg id="sound-icon-on" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+
+        <!-- Background / Theme Shortcut -->
+        <button id="btn-header-theme" class="action-btn icon-only" title="Change Background & Colors" aria-label="Theme Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Views Container -->
+    <main class="main-content">
+      
+      <!-- ================= VIEW 1: TO-DO LIST ================= -->
+      <section id="view-tasks" class="view-section active">
+        
+        <!-- Header Controls: Month & Year Selector -->
+        <div class="card selector-card">
+          <div class="calendar-filter-bar">
+            <div class="filter-group">
+              <label for="select-year" class="filter-label">Year</label>
+              <select id="select-year" class="form-select"></select>
+            </div>
+            <div class="filter-group">
+              <label for="select-month" class="filter-label">Month</label>
+              <select id="select-month" class="form-select">
+                <option value="all">All Months</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+              </select>
+            </div>
+            <button id="btn-quick-today" class="chip-btn today-chip" title="Jump to Today">Today</button>
+          </div>
+
+          <!-- Quick Filter Chips -->
+          <div class="filter-chips-scroll">
+            <button class="chip active" data-filter="all">All Tasks</button>
+            <button class="chip" data-filter="today">Today</button>
+            <button class="chip" data-filter="upcoming">Upcoming</button>
+            <button class="chip" data-filter="high">High Priority</button>
+            <button class="chip" data-filter="completed">Completed</button>
+          </div>
+        </div>
+
+        <!-- Study Progress Summary Banner -->
+        <div class="card progress-banner-card">
+          <div class="progress-info">
+            <div class="progress-text-block">
+              <span class="progress-title" id="progress-period-title">Task Completion</span>
+              <span class="progress-stat" id="progress-stat-text">0 / 0 completed</span>
+            </div>
+            <div class="streak-badge" title="Daily Study Streak">
+              <span class="streak-icon">🔥</span>
+              <span id="streak-count">0</span> day streak
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="tasks-progress-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Task Search & Quick Add Input -->
+        <div class="tasks-action-row">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="task-search-input" placeholder="Search tasks, subjects, tags..." class="search-input">
+          </div>
+          <button id="btn-open-add-task" class="btn btn-primary add-task-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Add Task</span>
+          </button>
+        </div>
+
+        <!-- Task List Items -->
+        <div id="tasks-container" class="tasks-list">
+          <!-- Rendered via JavaScript -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="tasks-empty-state" class="empty-state hidden">
+          <div class="empty-icon">🌱</div>
+          <h3 class="empty-title">All tasks completed!</h3>
+          <p class="empty-subtitle">Take a breather, or add new study goals for this period.</p>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 2: TIMETABLE ================= -->
+      <section id="view-timetable" class="view-section">
+        
+        <!-- Live Now Banner -->
+        <div class="card live-status-card" id="live-timetable-banner">
+          <div class="live-indicator-dot"></div>
+          <div class="live-text-content">
+            <div class="live-label">LIVE STUDY STATUS</div>
+            <div class="live-subject" id="live-subject-name">No active session right now</div>
+            <div class="live-details" id="live-subject-time">Check schedule below</div>
+          </div>
+        </div>
+
+        <!-- Day Selector Pills (Mon - Sun) -->
+        <div class="card timetable-days-card">
+          <div class="day-pills-row" id="timetable-day-selector">
+            <button class="day-pill" data-day="1">Mon</button>
+            <button class="day-pill" data-day="2">Tue</button>
+            <button class="day-pill" data-day="3">Wed</button>
+            <button class="day-pill" data-day="4">Thu</button>
+            <button class="day-pill" data-day="5">Fri</button>
+            <button class="day-pill" data-day="6">Sat</button>
+            <button class="day-pill" data-day="0">Sun</button>
+            <button class="day-pill active" data-day="all">All</button>
+          </div>
+        </div>
+
+        <!-- Timetable Actions -->
+        <div class="section-header-row">
+          <div>
+            <h2 class="section-title">Weekly Schedule</h2>
+            <p class="section-subtitle">Classes, revision slots & study routine</p>
+          </div>
+          <button id="btn-add-timetable-slot" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Add Slot</span>
+          </button>
+        </div>
+
+        <!-- Timetable Slots Container -->
+        <div id="timetable-slots-container" class="timetable-grid">
+          <!-- Rendered via JavaScript -->
+        </div>
+
+        <div id="timetable-empty-state" class="empty-state hidden">
+          <div class="empty-icon">📅</div>
+          <h3 class="empty-title">No schedule for this day</h3>
+          <p class="empty-subtitle">Add classes or self-study blocks to stay organized.</p>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 3: FOCUS & TIMER ================= -->
+      <section id="view-focus" class="view-section">
+        
+        <!-- Pomodoro Mode Tabs -->
+        <div class="card timer-card">
+          <div class="timer-mode-selector">
+            <button class="timer-mode-btn active" data-mode="focus">Study (25m)</button>
+            <button class="timer-mode-btn" data-mode="shortBreak">Short Break (5m)</button>
+            <button class="timer-mode-btn" data-mode="longBreak">Long Break (15m)</button>
+          </div>
+
+          <!-- Circular Minimal Timer Display -->
+          <div class="timer-display-wrapper">
+            <svg class="timer-circle-svg" viewBox="0 0 260 260">
+              <circle class="timer-track" cx="130" cy="130" r="115"></circle>
+              <circle id="timer-progress-ring" class="timer-progress" cx="130" cy="130" r="115"></circle>
+            </svg>
+            <div class="timer-center-content">
+              <div id="timer-label" class="timer-mode-label">FOCUS TIME</div>
+              <div id="timer-time" class="timer-digital-display">25:00</div>
+              <div class="timer-session-info" id="timer-session-count">Session 1 of 4</div>
+            </div>
+          </div>
+
+          <!-- Timer Controls -->
+          <div class="timer-controls-row">
+            <button id="btn-timer-reset" class="timer-btn secondary" title="Reset">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>
+            </button>
+            <button id="btn-timer-play" class="timer-btn primary main-play-btn" title="Start">
+              <svg id="timer-icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <svg id="timer-icon-pause" class="hidden" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            </button>
+            <button id="btn-timer-skip" class="timer-btn secondary" title="Skip to next">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+            </button>
+          </div>
+
+          <!-- Quick Timer Duration Customizer -->
+          <div class="timer-custom-settings">
+            <details>
+              <summary class="custom-timer-summary">Adjust Minutes</summary>
+              <div class="timer-inputs-grid">
+                <div class="input-item">
+                  <label>Focus (min)</label>
+                  <input type="number" id="input-focus-time" min="1" max="90" value="25" class="form-input">
+                </div>
+                <div class="input-item">
+                  <label>Short (min)</label>
+                  <input type="number" id="input-short-break" min="1" max="30" value="5" class="form-input">
+                </div>
+                <div class="input-item">
+                  <label>Long (min)</label>
+                  <input type="number" id="input-long-break" min="1" max="60" value="15" class="form-input">
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Ambient Sound Player Card -->
+        <div class="card ambient-card">
+          <div class="ambient-header">
+            <div>
+              <h3 class="card-title">Study Ambient Audio</h3>
+              <p class="card-subtitle">Natural calming soundscapes (offline synthesis)</p>
+            </div>
+            <button id="btn-ambient-toggle" class="btn btn-secondary btn-sm">Turn On</button>
+          </div>
+          <div class="ambient-sound-types">
+            <button class="sound-chip active" data-sound="rain">🌧️ Gentle Rain</button>
+            <button class="sound-chip" data-sound="breeze">🍃 Soft Breeze</button>
+            <button class="sound-chip" data-sound="library">📚 Quiet Library</button>
+          </div>
+          <div class="ambient-volume-slider">
+            <span class="vol-label">Volume</span>
+            <input type="range" id="ambient-volume" min="0" max="1" step="0.05" value="0.35" class="range-slider">
+          </div>
+        </div>
+
+        <!-- Study Stats Overview -->
+        <div class="card stats-card">
+          <h3 class="card-title">Today's Focus Log</h3>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-number" id="stat-sessions-today">0</span>
+              <span class="stat-name">Sessions</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number" id="stat-minutes-today">0m</span>
+              <span class="stat-name">Study Time</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number" id="stat-completed-tasks">0</span>
+              <span class="stat-name">Tasks Done</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 4: SCRATCHPAD & STUDY NOTES ================= -->
+      <section id="view-notes" class="view-section">
+        <div class="card notes-card">
+          <div class="notes-header">
+            <div>
+              <h2 class="card-title">Study Scratchpad</h2>
+              <p class="card-subtitle">Quick formulas, lecture takeaways & thought logs</p>
+            </div>
+            <div class="notes-actions">
+              <button id="btn-clear-notes" class="btn btn-ghost btn-sm" title="Clear note">Clear</button>
+              <button id="btn-copy-notes" class="btn btn-secondary btn-sm" title="Copy text">Copy</button>
+            </div>
+          </div>
+          <textarea id="study-scratchpad" class="scratchpad-textarea" placeholder="Type or paste study notes here... Auto-saves instantly."></textarea>
+          <div class="notes-footer">
+            <span id="notes-word-count">0 words • 0 characters</span>
+            <span class="auto-save-status">Auto-saved to device</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 5: BACKGROUND & CUSTOMIZATION ================= -->
+      <section id="view-settings" class="view-section">
+        
+        <!-- Dark Mode Toggle Card -->
+        <div class="card theme-mode-card">
+          <div class="theme-mode-row">
+            <div>
+              <h3 class="card-title">Dark Mode Theme</h3>
+              <p class="card-subtitle">Gentle on the eyes for night study sessions</p>
+            </div>
+            <label class="switch-toggle" for="switch-dark-mode">
+              <input type="checkbox" id="switch-dark-mode">
+              <span class="slider-round"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- PWA / Home Screen Download Card -->
+        <div class="card download-card">
+          <div class="download-card-body">
+            <div class="download-icon-box">
+              <img src="./logo.jpg" alt="App Icon" class="download-app-icon">
+            </div>
+            <div class="download-text">
+              <h3 class="card-title">Download to Home Screen</h3>
+              <p class="card-subtitle">Install as a native Android app for 1-tap offline study access.</p>
+            </div>
+          </div>
+          <button id="btn-trigger-install" class="btn btn-primary full-width install-highlight-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Add to Home Screen</span>
+          </button>
+        </div>
+
+        <!-- Background Wallpaper Selector (From User Folder) -->
+        <div class="card wallpaper-card">
+          <div class="section-head section-head-with-action">
+            <div>
+              <h3 class="card-title">Background Folder Wallpapers</h3>
+              <p class="card-subtitle">Choose from the backgrounds in your workspace folder</p>
+            </div>
+            <button id="btn-clear-wallpaper" class="btn btn-ghost btn-sm" title="Remove wallpaper and use solid color">Remove Image</button>
+          </div>
+          <div class="wallpapers-grid" id="wallpapers-grid">
+            <!-- Wallpapers injected dynamically via app.js -->
+          </div>
+
+          <!-- Custom Image Upload Option -->
+          <div class="custom-upload-box">
+            <label for="custom-bg-input" class="upload-label-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>Upload Custom Photo from Device</span>
+            </label>
+            <input type="file" id="custom-bg-input" accept="image/*" class="hidden-input">
+          </div>
+        </div>
+
+        <!-- Solid Light Colors Preset (Minimal Solid requested) -->
+        <div class="card themes-card">
+          <div class="section-head">
+            <h3 class="card-title">Minimal Solid Colours</h3>
+            <p class="card-subtitle">Clean, distraction-free solid study backgrounds</p>
+          </div>
+          <div class="solid-colors-grid">
+            <button class="solid-color-btn active" data-color="#FFFFFF" data-name="Pure White" style="background-color: #FFFFFF;" title="Pure White"></button>
+            <button class="solid-color-btn" data-color="#FBF9F4" data-name="Warm Linen" style="background-color: #FBF9F4;" title="Warm Linen"></button>
+            <button class="solid-color-btn" data-color="#F0F4EF" data-name="Sage Matcha" style="background-color: #F0F4EF;" title="Sage Matcha"></button>
+            <button class="solid-color-btn" data-color="#F0F4F8" data-name="Pale Sky" style="background-color: #F0F4F8;" title="Pale Sky"></button>
+            <button class="solid-color-btn" data-color="#F5F2F7" data-name="Soft Lilac" style="background-color: #F5F2F7;" title="Soft Lilac"></button>
+            <button class="solid-color-btn" data-color="#F8F4EC" data-name="Sand Oat" style="background-color: #F8F4EC;" title="Sand Oat"></button>
+            <button class="solid-color-btn" data-color="#1A1C1E" data-name="Dark Slate" style="background-color: #1A1C1E;" title="Dark Slate"></button>
+          </div>
+        </div>
+
+        <!-- Wallpaper Dimmer / Contrast Slider -->
+        <div class="card opacity-card">
+          <div class="section-head">
+            <h3 class="card-title">Background Overlay & Contrast</h3>
+            <p class="card-subtitle">Adjust opacity to ensure study cards remain completely readable</p>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Card Contrast</span>
+            <input type="range" id="bg-overlay-slider" min="0" max="80" value="20" class="range-slider">
+            <span id="overlay-value-display">20%</span>
+          </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="card data-card">
+          <h3 class="card-title">Study Data & Backup</h3>
+          <p class="card-subtitle">All your tasks and timetable are saved safely on your device.</p>
+          <div class="data-buttons-row">
+            <button id="btn-export-data" class="btn btn-secondary btn-sm">Export Data (JSON)</button>
+            <label for="import-data-file" class="btn btn-ghost btn-sm file-trigger">Import Data</label>
+            <input type="file" id="import-data-file" accept=".json" class="hidden-input">
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom Android Navigation Bar -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-target="view-tasks">
+        <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span class="nav-label">Tasks</span>
+      </button>
+
+      <button class="nav-item" data-target="view-timetable">
+        <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span class="nav-label">Schedule</span>
+      </button>
+
+      <button class="nav-item" data-target="view-focus">
+        <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span class="nav-label">Focus</span>
+      </button>
+
+      <button class="nav-item" data-target="view-notes">
+        <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span class="nav-label">Notes</span>
+      </button>
+
+      <button class="nav-item" data-target="view-settings">
+        <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span class="nav-label">Theme</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= MODAL: ADD / EDIT TASK ================= -->
+  <div id="modal-task" class="modal-backdrop hidden">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 id="task-modal-title" class="modal-title">New Study Task</h3>
+        <button class="modal-close-btn" data-close="modal-task">&times;</button>
+      </div>
+      <form id="form-task" class="modal-body">
+        <input type="hidden" id="task-id">
+
+        <div class="form-group">
+          <label for="task-title" class="input-label">Task Title</label>
+          <input type="text" id="task-title" required placeholder="e.g. Solve Calculus Chapter 4 Exercises" class="form-input">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half" id="single-date-group">
+            <label for="task-date" class="input-label">Due Date</label>
+            <input type="date" id="task-date" required class="form-input">
+          </div>
+          <div class="form-group half">
+            <label for="task-priority" class="input-label">Priority</label>
+            <select id="task-priority" class="form-select">
+              <option value="low">Low (Routine)</option>
+              <option value="medium" selected>Medium (Standard)</option>
+              <option value="high">High (Urgent/Exam)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Repeat across Date Range ("this date to this date would be same to do") -->
+        <div class="form-group repeat-range-box" id="task-range-option-box">
+          <label class="switch-row-label">
+            <input type="checkbox" id="task-repeat-range-check">
+            <span>📅 Repeat this task from this date to that date</span>
+          </label>
+          <div id="task-date-range-fields" class="form-row hidden" style="margin-top: 8px;">
+            <div class="form-group half">
+              <label for="task-start-date" class="input-label">From Date</label>
+              <input type="date" id="task-start-date" class="form-input">
+            </div>
+            <div class="form-group half">
+              <label for="task-end-date" class="input-label">To Date</label>
+              <input type="date" id="task-end-date" class="form-input">
+            </div>
+          </div>
+          <p id="task-range-hint" class="field-hint hidden">This task and its checklist will automatically be added to every day in this date span.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="task-tag" class="input-label">Subject / Category</label>
+          <div class="tag-input-wrapper">
+            <input type="text" id="task-tag" list="preset-tags" placeholder="e.g. Mathematics, Science, Reading" class="form-input">
+            <datalist id="preset-tags">
+              <option value="Mathematics"></option>
+              <option value="Physics"></option>
+              <option value="Chemistry"></option>
+              <option value="Biology"></option>
+              <option value="Computer Science"></option>
+              <option value="English"></option>
+              <option value="History"></option>
+              <option value="Exam Prep"></option>
+              <option value="Assignment"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">Subtasks / Checklist (Optional)</label>
+          <div class="subtasks-input-box">
+            <input type="text" id="input-subtask-item" placeholder="Add a step and press Add..." class="form-input subtask-field">
+            <button type="button" id="btn-add-subtask-item" class="btn btn-secondary btn-sm">Add</button>
+          </div>
+          <div id="modal-subtasks-list" class="modal-subtasks-chips"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="modal-task">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DUPLICATE TASK TO OTHER DATES ================= -->
+  <div id="modal-duplicate-task" class="modal-backdrop hidden">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">Copy Task to Other Days</h3>
+        <button class="modal-close-btn" data-close="modal-duplicate-task">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="section-subtitle" id="dup-task-title-preview" style="font-weight: 600; color: var(--text-main);"></p>
+        <input type="hidden" id="dup-task-source-id">
+
+        <div class="form-group">
+          <label class="input-label">Choose Target Date Range</label>
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="dup-start-date" class="input-label">From Date</label>
+              <input type="date" id="dup-start-date" required class="form-input">
+            </div>
+            <div class="form-group half">
+              <label for="dup-end-date" class="input-label">To Date</label>
+              <input type="date" id="dup-end-date" required class="form-input">
+            </div>
+          </div>
+          <p class="field-hint">A copy of this task (with all subtasks) will be created for each day in this range.</p>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="modal-duplicate-task">Cancel</button>
+          <button type="button" id="btn-confirm-duplicate-task" class="btn btn-primary">Copy to Days</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD / EDIT TIMETABLE SLOT ================= -->
+  <div id="modal-timetable" class="modal-backdrop hidden">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 id="timetable-modal-title" class="modal-title">Add Timetable Slot</h3>
+        <button class="modal-close-btn" data-close="modal-timetable">&times;</button>
+      </div>
+      <form id="form-timetable" class="modal-body">
+        <input type="hidden" id="slot-id">
+
+        <div class="form-group">
+          <label for="slot-subject" class="input-label">Subject / Class Name</label>
+          <input type="text" id="slot-subject" required placeholder="e.g. Advanced Physics" class="form-input">
+        </div>
+
+        <!-- Multi-Day Selection for Timetable -->
+        <div class="form-group">
+          <label class="input-label">Days to Schedule</label>
+          <div class="timetable-days-checkboxes" id="slot-days-group">
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="1"><span>Mon</span></label>
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="2"><span>Tue</span></label>
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="3"><span>Wed</span></label>
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="4"><span>Thu</span></label>
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="5"><span>Fri</span></label>
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="6"><span>Sat</span></label>
+            <label class="day-checkbox-chip"><input type="checkbox" name="slot-day-pick" value="0"><span>Sun</span></label>
+          </div>
+          <div class="quick-days-presets">
+            <button type="button" class="preset-link-btn" id="btn-preset-weekdays">Mon–Fri</button>
+            <button type="button" class="preset-link-btn" id="btn-preset-allweek">All Week</button>
+            <button type="button" class="preset-link-btn" id="btn-preset-clear">Clear</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="slot-start" class="input-label">Start Time</label>
+            <input type="time" id="slot-start" required value="09:00" class="form-input">
+          </div>
+          <div class="form-group half">
+            <label for="slot-end" class="input-label">End Time</label>
+            <input type="time" id="slot-end" required value="10:30" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="slot-room" class="input-label">Room / Teacher / Note</label>
+          <input type="text" id="slot-room" placeholder="e.g. Room 204 or Dr. Miller" class="form-input">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="modal-timetable">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: INSTALL APP (PWA GUIDANCE) ================= -->
+  <div id="modal-install" class="modal-backdrop hidden">
+    <div class="modal-sheet install-modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">Download to Home Screen</h3>
+        <button class="modal-close-btn" data-close="modal-install">&times;</button>
+      </div>
+      <div class="modal-body install-modal-body">
+        <div class="install-preview-header">
+          <img src="./logo.jpg" alt="ZenStudy" class="install-preview-icon">
+          <div>
+            <h4 class="install-app-name">ZenStudy</h4>
+            <p class="install-app-domain">Fast, light & works offline</p>
+          </div>
+        </div>
+
+        <div id="native-install-section" class="native-install-box">
+          <button id="btn-native-install-trigger" class="btn btn-primary full-width">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Install App Now</span>
+          </button>
+        </div>
+
+        <div class="install-steps-container">
+          <h5 class="install-steps-title">How to install on Android Chrome:</h5>
+          <ol class="install-steps-list">
+            <li>Tap the browser menu <strong class="menu-dots">⋮ (three dots)</strong> at the top right of your screen.</li>
+            <li>Select <strong class="highlight-text">"Add to Home screen"</strong> or <strong class="highlight-text">"Install app"</strong>.</li>
+            <li>Tap <strong class="highlight-text">"Install"</strong> to confirm. ZenStudy will appear right on your Android home screen!</li>
+          </ol>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary full-width" data-close="modal-install">Got it</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- App Script -->
+  <script src="./app.js"></script>
+</body>
+</html>
